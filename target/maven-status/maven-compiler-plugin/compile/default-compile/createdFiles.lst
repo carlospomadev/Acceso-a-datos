@@ -1,0 +1,12 @@
+com\biblioteca\main\Main.class
+com\biblioteca\model\Libro.class
+com\biblioteca\util\DBConnection.class
+com\biblioteca\dao\LibroDAO.class
+com\biblioteca\dao\PrestamoDAO.class
+com\biblioteca\model\Usuario.class
+com\biblioteca\main\TestPrestamoDAO.class
+com\biblioteca\model\Prestamo.class
+com\biblioteca\main\TestLibroDAO.class
+com\biblioteca\main\TestConexion.class
+com\biblioteca\main\TestUsuarioDAO.class
+com\biblioteca\dao\UsuarioDAO.class

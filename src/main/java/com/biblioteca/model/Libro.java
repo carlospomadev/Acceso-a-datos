@@ -2,100 +2,78 @@ package com.biblioteca.model;
 
 public class Libro {
 
-    private int idLibro;
+    private int id;
     private String titulo;
     private int anioPublicacion;
     private String isbn;
-    private int stock;
+    private int disponible; // 1 = disponible, 0 = no disponible
     private int idAutor;
     private int idCategoria;
 
     public Libro() {
     }
 
-    public Libro(int idLibro, String titulo, int anioPublicacion, String isbn, int stock, int idAutor, int idCategoria) {
-        this.idLibro = idLibro;
+    public Libro(int id, String titulo, int anioPublicacion, String isbn,
+                 int disponible, int idAutor, int idCategoria) {
+        this.id = id;
         this.titulo = titulo;
         this.anioPublicacion = anioPublicacion;
         this.isbn = isbn;
-        this.stock = stock;
+        this.disponible = disponible;
         this.idAutor = idAutor;
         this.idCategoria = idCategoria;
     }
 
-    public Libro(String titulo, int anioPublicacion, String isbn, int stock, int idAutor, int idCategoria) {
+    public Libro(String titulo, int anioPublicacion, String isbn,
+                 int disponible, int idAutor, int idCategoria) {
         this.titulo = titulo;
         this.anioPublicacion = anioPublicacion;
         this.isbn = isbn;
-        this.stock = stock;
+        this.disponible = disponible;
         this.idAutor = idAutor;
         this.idCategoria = idCategoria;
     }
 
-    public int getIdLibro() {
-        return idLibro;
+    public int getId() {
+        return id;
     }
 
-    public void setIdLibro(int idLibro) {
-        this.idLibro = idLibro;
+    public void setId(int id) {
+        this.id = id;
     }
 
     public String getTitulo() {
         return titulo;
     }
 
-    public void setTitulo(String titulo) {
-        this.titulo = titulo;
-    }
-
     public int getAnioPublicacion() {
         return anioPublicacion;
-    }
-
-    public void setAnioPublicacion(int anioPublicacion) {
-        this.anioPublicacion = anioPublicacion;
     }
 
     public String getIsbn() {
         return isbn;
     }
 
-    public void setIsbn(String isbn) {
-        this.isbn = isbn;
-    }
-
-    public int getStock() {
-        return stock;
-    }
-
-    public void setStock(int stock) {
-        this.stock = stock;
+    public int getDisponible() {
+        return disponible;
     }
 
     public int getIdAutor() {
         return idAutor;
     }
 
-    public void setIdAutor(int idAutor) {
-        this.idAutor = idAutor;
-    }
-
     public int getIdCategoria() {
         return idCategoria;
-    }
-
-    public void setIdCategoria(int idCategoria) {
-        this.idCategoria = idCategoria;
     }
 
     @Override
     public String toString() {
         return "Libro{" +
-                "idLibro=" + idLibro +
+                "id=" + id +
                 ", titulo='" + titulo + '\'' +
                 ", anioPublicacion=" + anioPublicacion +
                 ", isbn='" + isbn + '\'' +
-                ", stock=" + stock +
+                ", disponible=" + disponible +
                 ", idAutor=" + idAutor +
                 ", idCategoria=" + idCategoria +
                 '}';
