@@ -15,7 +15,6 @@ public class Main {
     private static final LibroDAO libroDAO = new LibroDAO();
     private static final AutorDAO autorDAO = new AutorDAO();
     private static final CategoriaDAO categoriaDAO = new CategoriaDAO();
-
     private static final UsuarioDAO usuarioDAO = new UsuarioDAO();
     private static final PrestamoDAO prestamoDAO = new PrestamoDAO();
 
@@ -39,13 +38,11 @@ public class Main {
                 case 7 -> categoriaDAO.listarCategorias();
                 case 8 -> agregarCategoria();
 
-                // ===== USUARIOS =====
                 case 9 -> usuarioDAO.listarUsuarios();
                 case 10 -> agregarUsuario();
 
-                // ===== PRÉSTAMOS =====
-                case 11 -> registrarPrestamo();
-                case 12 -> devolverPrestamo();
+                case 11 -> registrarPrestamo();         // ✅ mejorado
+                case 12 -> devolverPrestamo();          // ✅ separadores
                 case 13 -> prestamoDAO.listarPrestamosActivos();
                 case 14 -> historialPorUsuario();
 
@@ -53,6 +50,8 @@ public class Main {
 
                 default -> System.out.println("Opción no válida.");
             }
+
+            System.out.println(); // espacio entre operaciones
 
         } while (opcion != 0);
     }
@@ -129,31 +128,53 @@ public class Main {
         usuarioDAO.agregarUsuario(nombre, email, telefono);
     }
 
-    // ====== PRÉSTAMOS ======
+    // ====== PRÉSTAMOS (✅ MEJORADO) ======
     private static void registrarPrestamo() {
-        System.out.println("\n=== REGISTRAR PRÉSTAMO ===");
+        System.out.println("\n======================================");
+        System.out.println(" REGISTRAR PRÉSTAMO ");
+        System.out.println("======================================");
 
-        libroDAO.listarLibrosDisponibles();
-        int libroId = leerEntero("ID del libro (debe estar disponible): ");
+        // ✅ Lista compacta (tabla)
+        libroDAO.listarLibrosDisponiblesResumen();
+        System.out.println();
+        int libroId = leerEntero("ID del libro (disponible): ");
 
-        usuarioDAO.listarUsuarios();
+        // ✅ Lista compacta (tabla)
+        usuarioDAO.listarUsuariosResumen();
+        System.out.println();
         int usuarioId = leerEntero("ID del usuario: ");
 
+        System.out.println("\n--------------------------------------");
         prestamoDAO.registrarPrestamo(libroId, usuarioId);
+        System.out.println("--------------------------------------");
     }
 
     private static void devolverPrestamo() {
-        System.out.println("\n=== DEVOLVER PRÉSTAMO ===");
+        System.out.println("\n======================================");
+        System.out.println(" DEVOLVER PRÉSTAMO ");
+        System.out.println("======================================");
+
         prestamoDAO.listarPrestamosActivos();
+        System.out.println();
         int prestamoId = leerEntero("ID del préstamo a devolver: ");
+
+        System.out.println("\n--------------------------------------");
         prestamoDAO.devolverPrestamo(prestamoId);
+        System.out.println("--------------------------------------");
     }
 
     private static void historialPorUsuario() {
-        System.out.println("\n=== HISTORIAL POR USUARIO ===");
-        usuarioDAO.listarUsuarios();
+        System.out.println("\n======================================");
+        System.out.println(" HISTORIAL DE PRÉSTAMOS POR USUARIO ");
+        System.out.println("======================================");
+
+        usuarioDAO.listarUsuariosResumen();
+        System.out.println();
         int usuarioId = leerEntero("ID del usuario: ");
+
+        System.out.println("\n--------------------------------------");
         prestamoDAO.historialPrestamosPorUsuario(usuarioId);
+        System.out.println("--------------------------------------");
     }
 
     // ====== UTIL ======

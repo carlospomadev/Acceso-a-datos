@@ -9,6 +9,9 @@ import java.sql.SQLException;
 
 public class PrestamoDAO {
 
+    // =========================================================
+    // LISTADO DE PRÉSTAMOS ACTIVOS (TABULADO Y LIMPIO)
+    // =========================================================
     public void listarPrestamosActivos() {
         String sql = """
                 SELECT p.id,
@@ -19,7 +22,7 @@ public class PrestamoDAO {
                 INNER JOIN libros l ON p.libro_id = l.id
                 INNER JOIN usuarios u ON p.usuario_id = u.id
                 WHERE p.estado = 'ACTIVO'
-                ORDER BY p.fecha_prestamo DESC;
+                ORDER BY p.id;
                 """;
 
         try (Connection con = DBConnection.getConnection();
@@ -27,19 +30,30 @@ public class PrestamoDAO {
              ResultSet rs = stmt.executeQuery()) {
 
             System.out.println("\n=== PRÉSTAMOS ACTIVOS ===");
+            System.out.printf(
+                "%-4s | %-35s | %-22s | %-20s%n",
+                "ID", "LIBRO", "USUARIO", "FECHA PRÉSTAMO"
+            );
+            System.out.println("-------------------------------------------------------------------------------------");
+
             boolean hay = false;
 
             while (rs.next()) {
                 hay = true;
-                System.out.println("----------------------------------------");
-                System.out.println("ID Préstamo: " + rs.getInt("id"));
-                System.out.println("Libro: " + rs.getString("libro"));
-                System.out.println("Usuario: " + rs.getString("usuario"));
-                System.out.println("Fecha préstamo: " + rs.getString("fecha_prestamo"));
+
+                int id = rs.getInt("id");
+                String libro = recortar(rs.getString("libro"), 35);
+                String usuario = recortar(rs.getString("usuario"), 22);
+                String fecha = rs.getString("fecha_prestamo");
+
+                System.out.printf(
+                    "%-4d | %-35s | %-22s | %-20s%n",
+                    id, libro, usuario, fecha
+                );
             }
 
             if (!hay) {
-                System.out.println("No hay préstamos activos.");
+                System.out.println("No hay préstamos activos actualmente.");
             }
 
         } catch (SQLException e) {
@@ -47,6 +61,9 @@ public class PrestamoDAO {
         }
     }
 
+    // =========================================================
+    // REGISTRAR PRÉSTAMO
+    // =========================================================
     public void registrarPrestamo(int libroId, int usuarioId) {
         String sqlDisponible = "SELECT disponible FROM libros WHERE id = ?;";
         String sqlInsert = "INSERT INTO prestamos (libro_id, usuario_id, estado) VALUES (?, ?, 'ACTIVO');";
@@ -64,8 +81,7 @@ public class PrestamoDAO {
                         con.rollback();
                         return;
                     }
-                    int disponible = rs.getInt("disponible");
-                    if (disponible != 1) {
+                    if (rs.getInt("disponible") != 1) {
                         System.out.println("El libro NO está disponible (ya está prestado).");
                         con.rollback();
                         return;
@@ -101,6 +117,9 @@ public class PrestamoDAO {
         }
     }
 
+    // =========================================================
+    // DEVOLVER PRÉSTAMO
+    // =========================================================
     public void devolverPrestamo(int prestamoId) {
         String sqlGetLibro = "SELECT libro_id FROM prestamos WHERE id = ? AND estado = 'ACTIVO';";
         String sqlUpdatePrestamo = """
@@ -114,7 +133,7 @@ public class PrestamoDAO {
         try (Connection con = DBConnection.getConnection()) {
             con.setAutoCommit(false);
 
-            Integer libroId = null;
+            Integer libroId;
 
             // 1) Obtener libro_id del préstamo activo
             try (PreparedStatement stmt = con.prepareStatement(sqlGetLibro)) {
@@ -130,16 +149,13 @@ public class PrestamoDAO {
             }
 
             // 2) Marcar préstamo como DEVUELTO
-            int filas;
             try (PreparedStatement stmt = con.prepareStatement(sqlUpdatePrestamo)) {
                 stmt.setInt(1, prestamoId);
-                filas = stmt.executeUpdate();
-            }
-
-            if (filas == 0) {
-                System.out.println("No se pudo devolver el préstamo (quizá ya estaba devuelto).");
-                con.rollback();
-                return;
+                if (stmt.executeUpdate() == 0) {
+                    System.out.println("No se pudo devolver el préstamo.");
+                    con.rollback();
+                    return;
+                }
             }
 
             // 3) Marcar libro como disponible
@@ -156,6 +172,9 @@ public class PrestamoDAO {
         }
     }
 
+    // =========================================================
+    // HISTORIAL DE PRÉSTAMOS POR USUARIO
+    // =========================================================
     public void historialPrestamosPorUsuario(int usuarioId) {
         String sql = """
                 SELECT p.id,
@@ -175,7 +194,9 @@ public class PrestamoDAO {
             stmt.setInt(1, usuarioId);
 
             try (ResultSet rs = stmt.executeQuery()) {
+
                 System.out.println("\n=== HISTORIAL DE PRÉSTAMOS (USUARIO ID " + usuarioId + ") ===");
+
                 boolean hay = false;
 
                 while (rs.next()) {
@@ -198,8 +219,9 @@ public class PrestamoDAO {
         }
     }
 
-    // ===== Helpers privados =====
-
+    // =========================================================
+    // HELPERS
+    // =========================================================
     private boolean existeUsuario(Connection con, int usuarioId) throws SQLException {
         String sql = "SELECT id FROM usuarios WHERE id = ?;";
         try (PreparedStatement stmt = con.prepareStatement(sql)) {
@@ -208,5 +230,12 @@ public class PrestamoDAO {
                 return rs.next();
             }
         }
+    }
+
+    // Evita que textos largos rompan las tablas en consola
+    private String recortar(String texto, int max) {
+        if (texto == null) return "";
+        if (texto.length() <= max) return texto;
+        return texto.substring(0, Math.max(0, max - 3)) + "...";
     }
 }

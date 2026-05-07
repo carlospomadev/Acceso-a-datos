@@ -62,6 +62,7 @@ public class UsuarioDAO {
              PreparedStatement stmt = con.prepareStatement(sql)) {
 
             stmt.setInt(1, id);
+
             try (ResultSet rs = stmt.executeQuery()) {
                 return rs.next();
             }
@@ -70,5 +71,44 @@ public class UsuarioDAO {
             System.out.println("Error al validar usuario: " + e.getMessage());
             return false;
         }
+    }
+
+    // =========================
+    // ✅ NUEVO: LISTADO RESUMIDO (para registrar préstamo)
+    // =========================
+    public void listarUsuariosResumen() {
+        String sql = "SELECT id, nombre, email FROM usuarios ORDER BY id;";
+
+        try (Connection con = DBConnection.getConnection();
+             PreparedStatement stmt = con.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
+
+            System.out.println("\n=== SELECCIÓN DE USUARIO ===");
+            System.out.printf("%-4s | %-22s | %-30s%n", "ID", "NOMBRE", "EMAIL");
+            System.out.println("----------------------------------------------------------------");
+
+            boolean hay = false;
+            while (rs.next()) {
+                hay = true;
+                int id = rs.getInt("id");
+                String nombre = recortar(rs.getString("nombre"), 22);
+                String email = recortar(rs.getString("email"), 30);
+
+                System.out.printf("%-4d | %-22s | %-30s%n", id, nombre, email);
+            }
+
+            if (!hay) {
+                System.out.println("No hay usuarios registrados.");
+            }
+
+        } catch (SQLException e) {
+            System.out.println("Error al listar usuarios (resumen): " + e.getMessage());
+        }
+    }
+
+    private String recortar(String texto, int max) {
+        if (texto == null) return "";
+        if (texto.length() <= max) return texto;
+        return texto.substring(0, Math.max(0, max - 3)) + "...";
     }
 }

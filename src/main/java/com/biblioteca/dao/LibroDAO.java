@@ -9,6 +9,9 @@ import java.sql.SQLException;
 
 public class LibroDAO {
 
+    // =========================
+    // LISTADO DETALLADO (ya lo tenías)
+    // =========================
     public void listarLibros() {
         String sql = """
                 SELECT 
@@ -219,5 +222,53 @@ public class LibroDAO {
         } catch (SQLException e) {
             System.out.println("Error al listar libros disponibles: " + e.getMessage());
         }
+    }
+
+    // =========================
+    // ✅ NUEVO: LISTADO RESUMIDO (para registrar préstamo)
+    // =========================
+    public void listarLibrosDisponiblesResumen() {
+        String sql = """
+                SELECT l.id,
+                       l.titulo,
+                       a.nombre AS autor
+                FROM libros l
+                INNER JOIN autores a ON l.autor_id = a.id
+                WHERE l.disponible = 1
+                ORDER BY l.id;
+                """;
+
+        try (Connection conexion = DBConnection.getConnection();
+             PreparedStatement stmt = conexion.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
+
+            System.out.println("\n=== SELECCIÓN DE LIBRO (DISPONIBLES) ===");
+            System.out.printf("%-4s | %-35s | %-25s%n", "ID", "TÍTULO", "AUTOR");
+            System.out.println("---------------------------------------------------------------------");
+
+            boolean hay = false;
+            while (rs.next()) {
+                hay = true;
+                int id = rs.getInt("id");
+                String titulo = recortar(rs.getString("titulo"), 35);
+                String autor = recortar(rs.getString("autor"), 25);
+
+                System.out.printf("%-4d | %-35s | %-25s%n", id, titulo, autor);
+            }
+
+            if (!hay) {
+                System.out.println("No hay libros disponibles para prestar.");
+            }
+
+        } catch (SQLException e) {
+            System.out.println("Error al listar libros disponibles (resumen): " + e.getMessage());
+        }
+    }
+
+    // helper para evitar que textos largos rompan la tabla
+    private String recortar(String texto, int max) {
+        if (texto == null) return "";
+        if (texto.length() <= max) return texto;
+        return texto.substring(0, Math.max(0, max - 3)) + "...";
     }
 }
