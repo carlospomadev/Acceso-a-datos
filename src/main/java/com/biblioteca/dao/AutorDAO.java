@@ -1,6 +1,6 @@
 package com.biblioteca.dao;
 
-import com.biblioteca.util.ConexionBD;
+import com.biblioteca.util.DBConnection;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -16,7 +16,7 @@ public class AutorDAO {
                 ORDER BY id;
                 """;
 
-        try (Connection conexion = ConexionBD.conectar();
+        try (Connection conexion = DBConnection.getConnection();
              PreparedStatement stmt = conexion.prepareStatement(sql);
              ResultSet rs = stmt.executeQuery()) {
 
@@ -38,7 +38,7 @@ public class AutorDAO {
     public void agregarAutor(String nombre, String nacionalidad) {
         String sql = "INSERT INTO autores (nombre, nacionalidad) VALUES (?, ?);";
 
-        try (Connection conexion = ConexionBD.conectar();
+        try (Connection conexion = DBConnection.getConnection();
              PreparedStatement stmt = conexion.prepareStatement(sql)) {
 
             stmt.setString(1, nombre);
@@ -61,7 +61,7 @@ public class AutorDAO {
                 ORDER BY id;
                 """;
 
-        try (Connection conexion = ConexionBD.conectar();
+        try (Connection conexion = DBConnection.getConnection();
              PreparedStatement stmt = conexion.prepareStatement(sql)) {
 
             stmt.setString(1, "%" + nombreBuscado + "%");
@@ -99,7 +99,7 @@ public class AutorDAO {
                 WHERE id = ?;
                 """;
 
-        try (Connection conexion = ConexionBD.conectar();
+        try (Connection conexion = DBConnection.getConnection();
              PreparedStatement stmt = conexion.prepareStatement(sql)) {
 
             stmt.setString(1, nombre);
@@ -120,7 +120,7 @@ public class AutorDAO {
     public void eliminarAutor(int id) {
         String sql = "DELETE FROM autores WHERE id = ?;";
 
-        try (Connection conexion = ConexionBD.conectar();
+        try (Connection conexion = DBConnection.getConnection();
              PreparedStatement stmt = conexion.prepareStatement(sql)) {
 
             stmt.setInt(1, id);
@@ -140,7 +140,7 @@ public class AutorDAO {
     public boolean existeAutor(int id) {
         String sql = "SELECT id FROM autores WHERE id = ?;";
 
-        try (Connection conexion = ConexionBD.conectar();
+        try (Connection conexion = DBConnection.getConnection();
              PreparedStatement stmt = conexion.prepareStatement(sql)) {
 
             stmt.setInt(1, id);

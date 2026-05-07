@@ -1,6 +1,6 @@
 package com.biblioteca.dao;
 
-import com.biblioteca.util.ConexionBD;
+import com.biblioteca.util.DBConnection;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -25,7 +25,7 @@ public class LibroDAO {
                 ORDER BY l.id;
                 """;
 
-        try (Connection conexion = ConexionBD.conectar();
+        try (Connection conexion = DBConnection.getConnection();
              PreparedStatement stmt = conexion.prepareStatement(sql);
              ResultSet rs = stmt.executeQuery()) {
 
@@ -56,7 +56,7 @@ public class LibroDAO {
                 VALUES (?, ?, ?, ?, ?, 1);
                 """;
 
-        try (Connection conexion = ConexionBD.conectar();
+        try (Connection conexion = DBConnection.getConnection();
              PreparedStatement stmt = conexion.prepareStatement(sql)) {
 
             stmt.setString(1, titulo);
@@ -91,7 +91,7 @@ public class LibroDAO {
                 ORDER BY l.id;
                 """;
 
-        try (Connection conexion = ConexionBD.conectar();
+        try (Connection conexion = DBConnection.getConnection();
              PreparedStatement stmt = conexion.prepareStatement(sql)) {
 
             stmt.setString(1, "%" + tituloBuscado + "%");
@@ -136,7 +136,7 @@ public class LibroDAO {
                 WHERE id = ?;
                 """;
 
-        try (Connection conexion = ConexionBD.conectar();
+        try (Connection conexion = DBConnection.getConnection();
              PreparedStatement stmt = conexion.prepareStatement(sql)) {
 
             stmt.setString(1, titulo);
@@ -160,7 +160,7 @@ public class LibroDAO {
     public void eliminarLibro(int id) {
         String sql = "DELETE FROM libros WHERE id = ?;";
 
-        try (Connection conexion = ConexionBD.conectar();
+        try (Connection conexion = DBConnection.getConnection();
              PreparedStatement stmt = conexion.prepareStatement(sql)) {
 
             stmt.setInt(1, id);
@@ -193,7 +193,7 @@ public class LibroDAO {
                 ORDER BY l.id;
                 """;
 
-        try (Connection conexion = ConexionBD.conectar();
+        try (Connection conexion = DBConnection.getConnection();
              PreparedStatement stmt = conexion.prepareStatement(sql);
              ResultSet rs = stmt.executeQuery()) {
 

@@ -1,6 +1,6 @@
 package com.biblioteca.dao;
 
-import com.biblioteca.util.ConexionBD;
+import com.biblioteca.util.DBConnection;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -16,7 +16,7 @@ public class CategoriaDAO {
                 ORDER BY id;
                 """;
 
-        try (Connection conexion = ConexionBD.conectar();
+        try (Connection conexion = DBConnection.getConnection();
              PreparedStatement stmt = conexion.prepareStatement(sql);
              ResultSet rs = stmt.executeQuery()) {
 
@@ -38,7 +38,7 @@ public class CategoriaDAO {
     public void agregarCategoria(String nombre, String descripcion) {
         String sql = "INSERT INTO categorias (nombre, descripcion) VALUES (?, ?);";
 
-        try (Connection conexion = ConexionBD.conectar();
+        try (Connection conexion = DBConnection.getConnection();
              PreparedStatement stmt = conexion.prepareStatement(sql)) {
 
             stmt.setString(1, nombre);
@@ -62,7 +62,7 @@ public class CategoriaDAO {
                 ORDER BY id;
                 """;
 
-        try (Connection conexion = ConexionBD.conectar();
+        try (Connection conexion = DBConnection.getConnection();
              PreparedStatement stmt = conexion.prepareStatement(sql)) {
 
             stmt.setString(1, "%" + nombreBuscado + "%");
@@ -100,7 +100,7 @@ public class CategoriaDAO {
                 WHERE id = ?;
                 """;
 
-        try (Connection conexion = ConexionBD.conectar();
+        try (Connection conexion = DBConnection.getConnection();
              PreparedStatement stmt = conexion.prepareStatement(sql)) {
 
             stmt.setString(1, nombre);
@@ -122,7 +122,7 @@ public class CategoriaDAO {
     public void eliminarCategoria(int id) {
         String sql = "DELETE FROM categorias WHERE id = ?;";
 
-        try (Connection conexion = ConexionBD.conectar();
+        try (Connection conexion = DBConnection.getConnection();
              PreparedStatement stmt = conexion.prepareStatement(sql)) {
 
             stmt.setInt(1, id);
@@ -142,7 +142,7 @@ public class CategoriaDAO {
     public boolean existeCategoria(int id) {
         String sql = "SELECT id FROM categorias WHERE id = ?;";
 
-        try (Connection conexion = ConexionBD.conectar();
+        try (Connection conexion = DBConnection.getConnection();
              PreparedStatement stmt = conexion.prepareStatement(sql)) {
 
             stmt.setInt(1, id);
